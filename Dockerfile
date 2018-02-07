@@ -9,10 +9,34 @@ USER root
 
 RUN apt-get update
 
-RUN apt-get install -y vim nano openssl curl wget build-essential software-properties-common git
+RUN apt-get install -y vim nano openssl curl wget build-essential software-properties-common git zip
 
-# RUN add-apt-repository ppa:ondrej/php && \
-#     apt-get update
+RUN mkdir -p /tmp/WEB-INF/plugins
+
+# Install required jenkins plugins.
+RUN curl -L https://updates.jenkins-ci.org/latest/checkstyle.hpi -o /tmp/WEB-INF/plugins/checkstyle.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/cloverphp.hpi -o /tmp/WEB-INF/plugins/cloverphp.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/crap4j.hpi -o /tmp/WEB-INF/plugins/crap4j.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/dry.hpi -o /tmp/WEB-INF/plugins/dry.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/htmlpublisher.hpi -o /tmp/WEB-INF/plugins/htmlpublisher.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/jdepend.hpi -o /tmp/WEB-INF/plugins/jdepend.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/plot.hpi -o /tmp/WEB-INF/plugins/plot.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/pmd.hpi -o /tmp/WEB-INF/plugins/pmd.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/violations.hpi -o /tmp/WEB-INF/plugins/violations.hpi
+RUN curl -L https://updates.jenkins-ci.org/latest/xunit.hpi -o /tmp/WEB-INF/plugins/xunit.hpi
+
+# Add all to the war file.
+RUN cd /tmp; \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/checkstyle.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/cloverphp.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/crap4j.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/dry.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/htmlpublisher.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/jdepend.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/plot.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/pmd.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/violations.hpi && \
+  zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/xunit.hpi
 
 RUN apt-get install -y \
     php \
