@@ -19,6 +19,7 @@ RUN apt-get update && \
         libxml2-dev \
         xz-utils \
         git \
+        zip \
         vim \
         nano
 
