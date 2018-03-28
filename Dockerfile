@@ -2,15 +2,74 @@ FROM jenkins/jenkins:lts
 
 LABEL maintainer="Harvey Chow <harvey@hcdesigns.nl>"
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # if we want to install via apt
 USER root
 
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y \
+        curl \
+        locales \
+        software-properties-common \
+        pkg-config \
+        libcurl4-openssl-dev \
+        libedit-dev \
+        libssl-dev \
+        libxml2-dev \
+        xz-utils \
+        git \
+        vim \
+        nano
 
-RUN apt-get install -y vim nano openssl curl wget build-essential software-properties-common git zip
+#####################################
+# Install python (required for several npm builds)
+#####################################
+RUN apt-get install -y python
 
+#####################################
+# Set locales and set timezone
+#####################################
+RUN locale-gen en_US.UTF-8
+
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV LC_CTYPE=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV TERM xterm
+
+RUN ln -snf /usr/share/zoneinfo/CEST /etc/localtime && echo CEST > /etc/timezone
+
+#####################################
+# PHP 7.1
+#####################################
+# Add the "PHP 7" ppa (after locales setting)
+RUN add-apt-repository ppa:ondrej/php && \
+    apt-get update
+
+# Install "PHP Extentions", "libraries", "Software's"
+RUN apt-get install -y \
+        php7.1-cli \
+        php7.1-common \
+        php7.1-curl \
+        php7.1-dom \
+        php7.1-xdebug \
+        php7.1-intl \
+        php7.1-json \
+        php7.1-xml \
+        php7.1-xsl \
+        php7.1-mbstring \
+        php7.1-mcrypt \
+        php7.1-mysql \
+        php7.1-zip \
+        php7.1-bcmath \
+        php7.1-memcached \
+        php7.1-gd \
+        php7.1-dev
+
+#####################################
+# JENKINS PLUGINS
+#####################################
 RUN mkdir -p /tmp/WEB-INF/plugins
 
 # Install required jenkins plugins.
@@ -38,28 +97,24 @@ RUN cd /tmp; \
   zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/violations.hpi && \
   zip --grow /usr/share/jenkins/jenkins.war WEB-INF/plugins/xunit.hpi
 
-RUN apt-get install -y \
-    php \
-    php-dev \
-    php-cli \
-    php-common \
-    php-xdebug \
-    php-xsl \
-    php-dom \
-    php-intl \
-    php-zip \
-    php-mbstring \
-    php-mcrypt \
-    php-curl \
-    php-gd \
-    php-zip \
-    php-xml \
-    php-mysql
-
+#####################################
+# Composer:
+#####################################
+# Install composer and add its bin to the PATH.
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
     php -r "unlink('composer-setup.php');" && \
     chown -R jenkins:jenkins ~/.composer/
+
+#####################################
+# Python, NodeJS, yarn
+#####################################
+RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - &&\
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - &&\
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
+RUN apt-get update && \
+    apt-get install -y nodejs yarn
 
 # drop back to the regular jenkins user - good practice
 USER jenkins
