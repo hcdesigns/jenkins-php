@@ -26,7 +26,7 @@ RUN apt-get update && \
 #####################################
 # Install python (required for several npm builds)
 #####################################
-# RUN apt-get install -y python
+RUN apt-get install -y python
 
 #####################################
 # Set locales and set timezone
