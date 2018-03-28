@@ -25,45 +25,48 @@ RUN apt-get update && \
 #####################################
 # Install python (required for several npm builds)
 #####################################
-RUN apt-get install -y python
+# RUN apt-get install -y python
 
 #####################################
 # Set locales and set timezone
 #####################################
+# RUN locale-gen en_US.UTF-8
+
+# ENV LANGUAGE=en_US.UTF-8
+# ENV LC_ALL=en_US.UTF-8
+# ENV LC_CTYPE=en_US.UTF-8
+# ENV LANG=en_US.UTF-8
+# ENV TERM xterm
+
+# RUN ln -snf /usr/share/zoneinfo/CEST /etc/localtime && echo CEST > /etc/timezone
+
+RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
 RUN locale-gen en_US.UTF-8
-
-ENV LANGUAGE=en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
-ENV LC_CTYPE=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-ENV TERM xterm
-
-RUN ln -snf /usr/share/zoneinfo/CEST /etc/localtime && echo CEST > /etc/timezone
 
 #####################################
 # PHP 7.1
 #####################################
 # Add the "PHP 7" ppa (after locales setting)
-RUN add-apt-repository ppa:ondrej/php && \
-    apt-get update
+RUN apt-get install -y ca-certificates apt-transport-https
+RUN wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+RUN apt-get update
 
 # Install "PHP Extentions", "libraries", "Software's"
 RUN apt-get install -y \
         php7.1-cli \
         php7.1-common \
         php7.1-curl \
-        php7.1-dom \
-        php7.1-xdebug \
         php7.1-intl \
         php7.1-json \
         php7.1-xml \
-        php7.1-xsl \
         php7.1-mbstring \
         php7.1-mcrypt \
         php7.1-mysql \
         php7.1-zip \
         php7.1-bcmath \
-        php7.1-memcached \
         php7.1-gd \
         php7.1-dev
 
