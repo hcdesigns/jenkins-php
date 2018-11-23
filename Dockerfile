@@ -69,7 +69,8 @@ RUN apt-get install -y \
         php7.1-zip \
         php7.1-bcmath \
         php7.1-gd \
-        php7.1-dev
+        php7.1-dev \
+        php7.1-xdebug
 
 #####################################
 # JENKINS PLUGINS
