@@ -1,6 +1,6 @@
 # Jenkins with PHP support for Docker
 
-Installed PHP version: 7.0. Based on required modules: http://jenkins-php.org/installation.html.<br>
+Installed PHP version: 7.1. Based on required modules: http://jenkins-php.org/installation.html.<br>
 Inspired by https://github.com/naxhh/jenkins-php-docker and https://github.com/gustavoapolinario/jenkins-docker.
 
 ## Installation
