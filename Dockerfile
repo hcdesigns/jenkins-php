@@ -39,7 +39,9 @@ RUN apt-get install -y python
 # ENV LANG=en_US.UTF-8
 # ENV TERM xterm
 
-# RUN ln -snf /usr/share/zoneinfo/CEST /etc/localtime && echo CEST > /etc/timezone
+ENV TZ=Europe/Amsterdam
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
